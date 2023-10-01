@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -12,35 +11,26 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
+@immutable
+class Person {
+  final String name;
+  final int age;
+  final String emoji;
+  const Person({required this.name, required this.age, required this.emoji});
+}
+
+const people = [
+  Person(name: 'John', age: 20, emoji: '👨🏻‍💼'),
+  Person(name: 'Jack', age: 21, emoji: '🧔‍♂️'),
+  Person(name: 'Jack', age: 22, emoji: '👩🏼‍🦱'),
+];
+
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   // This widget is the root of your application.
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 5),
-    );
-    _animation = Tween(
-      begin: 0.0,
-      end: 2 * pi,
-    ).animate(_controller);
-    _controller.repeat();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
         brightness: Brightness.dark,
         colorSchemeSeed: Colors.red[700],
@@ -48,31 +38,92 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       ),
       darkTheme: ThemeData(brightness: Brightness.dark),
       home: Scaffold(
-          body: Center(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return Transform(
-              alignment: Alignment.center,
-              transform: Matrix4.identity()..rotateY(_animation.value),
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3))
-                    ]),
+        appBar: AppBar(
+          title: const Text('People'),
+          centerTitle: true,
+          elevation: 5.0,
+          backgroundColor: Colors.grey[900],
+        ),
+        body: ListView.builder(
+          itemCount: people.length,
+          itemBuilder: (context, index) {
+            final person = people[index];
+            return ListTile(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => Details(person: person)));
+              },
+              leading: Hero(
+                tag: person.name,
+                child: Text(
+                  person.emoji,
+                  style: const TextStyle(fontSize: 40),
+                ),
               ),
+              title: Text(person.name),
+              subtitle: Text('${person.age} years old'),
+              trailing: const Icon(Icons.arrow_forward_ios),
             );
           },
         ),
-      )),
+      ),
+    );
+  }
+}
+
+class Details extends StatelessWidget {
+  final Person person;
+  const Details({super.key, required this.person});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 5.0,
+        centerTitle: true,
+        title: Hero(
+          flightShuttleBuilder: (flightContext, animation, flightDirection,
+              fromHeroContext, toHeroContext) {
+            switch (flightDirection) {
+              case HeroFlightDirection.push:
+                return Material(
+                    color: Colors.transparent,
+                    child: ScaleTransition(
+                        scale: animation.drive(Tween<double>(begin: 0, end: 1)
+                            .chain(CurveTween(curve: Curves.fastOutSlowIn))),
+                        child: toHeroContext.widget));
+              case HeroFlightDirection.pop:
+                return Material(
+                    color: Colors.transparent, child: fromHeroContext.widget);
+            }
+          },
+          tag: person.name,
+          child: Text(
+            person.emoji,
+            style: const TextStyle(fontSize: 50),
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              person.name,
+              style: const TextStyle(fontSize: 20),
+            ),
+            const SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              '${person.age} years old',
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
