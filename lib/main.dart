@@ -55,19 +55,44 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             return Transform(
               alignment: Alignment.center,
               transform: Matrix4.identity()..rotateY(_animation.value),
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 10,
-                          offset: const Offset(0, 3))
-                    ]),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.5),
+                              spreadRadius: 5,
+                              blurRadius: 10,
+                              offset: const Offset(0, 3))
+                        ]),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.5),
+                                spreadRadius: 5,
+                                blurRadius: 10,
+                                offset: const Offset(0, 3))
+                          ]),
+                    ),
+                  ),
+                ],
               ),
             );
           },
